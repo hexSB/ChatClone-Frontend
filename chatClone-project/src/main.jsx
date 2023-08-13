@@ -9,7 +9,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <Auth0Provider 
     domain="hexsp.us.auth0.com"
     clientId="nYjwe3XbJmc4yRfnA1V0bKRyzp0wtwKr"
-    authorizationParams={{redirect_uri: window.location.origin, audience: "Chat-Auth", scope: "openid profile email access:chat"}} 
+    authorizationParams={{redirect_uri: window.location.origin, audience: "Chat-Auth", scope: "openid profile email read:messages"}} 
 >
       <App />
     </Auth0Provider>

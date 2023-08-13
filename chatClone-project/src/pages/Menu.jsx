@@ -33,6 +33,19 @@ const Welcome = () => {
       console.log(response.data)
     }
 
+    async function callGroup() {
+      const token = await getAccessTokenSilently();
+      const response = await axios.get("https://localhost:44306/api/Group", {
+        headers:{
+          authorization: `Bearer ${token}`
+        },
+        params:{
+          groupName: "Test"
+        },
+      })
+      console.log(response.data)
+    }
+
 
     
     return(
@@ -44,6 +57,7 @@ const Welcome = () => {
             <button onClick={callApi}>Get chat</button>
             <button onClick={callProtectedApi}>Get protected</button>
             <button onClick={callUserApi}>Get Auth</button>
+            <button onClick={callGroup}>Create Group</button>
 
         </div>)
   
