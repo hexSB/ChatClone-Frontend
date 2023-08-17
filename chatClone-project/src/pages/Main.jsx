@@ -3,12 +3,15 @@ import { useAuth0 } from '@auth0/auth0-react'
 const Log = () => {
     const{loginWithRedirect, logout, isAuthenticated} = useAuth0();
     return(
-        <div>
+        <div className='flex h-screen '>
+          <div class="m-auto">
+          <h1 className='font-bold tracking-wide text-8xl py-9'>ChatClone</h1>
             <button onClick={() => loginWithRedirect()}>Log In</button>
             <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
               Log Out
             </button>
-            <h3>User is {isAuthenticated ? "Logged in" : "Not Logged in"}</h3> 
+            <h3>User is {isAuthenticated ? "Logged in" : "Not Logged in, Please Login"}</h3>
+            </div> 
         </div>)
   
 };

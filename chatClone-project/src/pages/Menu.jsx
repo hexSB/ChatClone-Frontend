@@ -1,13 +1,13 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import axios from 'axios'
 import { useState } from 'react';
-
+import GroupList from '../components/GroupList';
+import CreateGroup from '../components/CreateGroup';
+import Profile from '../components/Profile';
 
 const Welcome = () => {
-    const { loginWithRedirect, logout, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
-    const [data, setData] = useState({
-      GroupName: ""
-    })
+    const { loginWithRedirect, logout, isAuthenticated, isLoading, getAccessTokenSilently, user } = useAuth0();
+
 
 
     function callApi() {
@@ -35,17 +35,6 @@ const Welcome = () => {
       console.log(response.data)
     }
 
-    async function callGroup() {
-      const token = await getAccessTokenSilently(); 
-      const response = await axios.post("https://localhost:44306/api/Group", data, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-    
-      console.log(response.data);
-    }
-    
 
     async function GroupGetTest() {
       const token = await getAccessTokenSilently();
@@ -59,50 +48,25 @@ const Welcome = () => {
     }
 
 
-    const handleInputChange = (event) => {
-      const { name, value } = event.target;
-      setData(prevData => ({
-        ...prevData,
-        [name]: value
-      }));
-    };
-  
-    const handleSubmit = (event) => {
-      event.preventDefault();
-      console.log("Submitted data:", data);
-    };
-
 
     
     return(
-      <div>
-        <div>
-            <h1>Welcome</h1>
+      <div className='absolute inset-12 '>
+        <Profile/>
+        <div >
             <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
               Log Out
             </button>
-            <button onClick={callApi}>Get chat</button>
+            <button onClick={callApi} >Get chat</button>
             <button onClick={callProtectedApi}>Get protected</button>
             <button onClick={callUserApi}>Get Auth</button>
-            <button onClick={callGroup}>Create Group</button>
-            <button onClick={GroupGetTest}>Get Groups</button>
 
+            <button onClick={GroupGetTest}>Get All Groups</button>
+            <CreateGroup/>
         </div>
-        <div>
-          <form onSubmit={handleSubmit}>
-            <label>
-              Group Name:
-              <input
-                type="text"
-                name="GroupName"
-                value={data.GroupName}
-                onChange={handleInputChange}
-              />
-            </label>
-            <button type="submit" onClick={callGroup}>Submit Group</button>
-          </form>
-        </div>
+        <GroupList/>
       </div>
+      
         )
   
 };

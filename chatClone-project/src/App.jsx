@@ -18,7 +18,7 @@ function App() {
     <div>
       <BrowserRouter>
         <Routes>
-          {isAuthenticated ? <Route index element={<Welcome />} /> : <Route index element={<Log />} />}
+          {isAuthenticated ? <Route index element={<Welcome />} className=''/> : <Route index element={<Log />} />}
         </Routes>
       </BrowserRouter>
     </div>
