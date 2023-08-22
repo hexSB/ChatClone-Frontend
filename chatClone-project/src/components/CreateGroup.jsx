@@ -12,12 +12,9 @@ const CreateGroup = () => {
       })
 
     const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setData(prevData => ({
-          ...prevData,
-          [name]: value
-        }));
-      };
+      const value = event.target.value;
+      setData({ GroupName: value });
+    };
     
       const handleSubmit = async (event) => {
         event.preventDefault();
