@@ -1,22 +1,26 @@
 
 import { useAuth0 } from '@auth0/auth0-react'
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import {HubConnectionBuilder, LogLevel} from '@microsoft/signalr'
 import Chat from './Chat';
+import CreateGroup from './CreateGroup';
 
-
-const GroupList = ({setSelectedId}) => {
-    const { loginWithRedirect, logout, isAuthenticated, isLoading, getAccessTokenSilently, user } = useAuth0();
-    const [groups, setGroups] = useState([]);
+const GroupList = ({sendGroupId}) => {
+    const { getAccessTokenSilently, user } = useAuth0();
+    const [groups, setGroups] = useState([])
     const [selectedgroupid, setselectedgroupid] = useState("")
     const [User, setUserid] = useState("")
     const [connection, setConnection] = useState()
-    const [messages, setMessages] = useState([]);
+    const [messages, setMessages] = useState([])
+    const [prevGroupId, setprevGroupId] = useState("")
+    const [groupTitle, setGroupTitle] = useState("")
+    const [addedGroup, setAddedGroup] = useState("")
 
 
 
 
+    //Connect to server socket group by groupId 
     const joinRoom = async (user, groupId) => {
         try {
             const connection = new HubConnectionBuilder()
@@ -24,9 +28,13 @@ const GroupList = ({setSelectedId}) => {
                 .configureLogging(LogLevel.Information)
                 .build();
     
-                connection.on("ReceiveMessage", (User, message) => {
-                    setMessages(messages => [...messages, { user: User, message }]);
+                connection.on("ReceiveMessage", (chatMessage) => {
+                    setMessages(messages => [...messages, chatMessage]);
                 });
+
+                connection.onclose(e => {
+                    setConnection()
+                })
                 
     
             await connection.start();
@@ -36,9 +44,18 @@ const GroupList = ({setSelectedId}) => {
             console.log(e);
         }
     };
-    
-    
+    //Disconnect from the web socket
+    const disconnect = async () => {
+        try{
+            await connection.stop();
 
+        }catch(e) {
+            console.log(e);
+        }
+    }
+    
+    
+    //Get request to get all the joined groups
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -51,54 +68,141 @@ const GroupList = ({setSelectedId}) => {
                 setGroups(response.data);
                 console.log(response.data)
                 setUserid(user.name)
+
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         };
 
         fetchData();
-    }, [])
-    
-    const handleGroupSelect = (groupId) =>{
-        setselectedgroupid(groupId)
-        setSelectedId(groupId)
-        joinRoom(user.name,groupId)
+    }, [addedGroup])
 
+
+    //Scrolls down when a new group a created
+    const grouplistEndRef = useRef(null);
+    const scrollToBottom = () => {
+        console.log("Scrolling to bottom");
+        grouplistEndRef.current.scrollIntoView({ behavior: "smooth" });
+      };
+      const isMounted = useRef(false);
+
+    //Once the new group is created the addedGroup dependancy changes and runs the scroll function
+    useEffect(() => {
+            try {
+                
+                if (isMounted.current) {
+                    scrollToBottom()
+                } else {
+                    // Component is mounting, set isMounted to true
+                    isMounted.current = true}
+
+            } catch (error) {
+                console.error(error);
+            }
+        }, [addedGroup])
+      
+
+
+
+
+    //Handles the group selection onclick  
+    const handleGroupSelect = (groupId, groupName) =>{
+
+        if (prevGroupId != groupId){
+            setselectedgroupid(groupId)
+            joinRoom(user.name,groupId)
+            setprevGroupId(groupId)
+            getMessagesbyGroupId(groupId)
+            setGroupTitle(groupName)
+            sendGroupId(groupId)
+            disconnect()
+        }
 
     }
 
-    const arrayData = groups.map((group) => <button key = {group.id} onClick={() => handleGroupSelect(group.id)} className=' hover:bg-gray-600 p-7 border-y-2 flex items-center space-x-20 divide-gray-200 dark:divide-gray-700'>
-        <p >{group.groupName}</p>
-        <p className="">Member id: {group.membersId}</p>
-        </button>);
 
 
-    const sendMessage = async (message) => {
+    //Sends the message to the websocket and store it to db
+    const sendMessage = async (message, selectedgroupid, User) => {
         try{
             await connection.invoke("SendMessage", message);
+
+            //Sends a post request to a create message api
+            const token = await getAccessTokenSilently();
+            const data = {
+                "groupId": selectedgroupid,
+                "user": User,
+                "message": message,
+                "timestamp": ""
+            }
+            const response = await axios.post(`https://localhost:44306/api/Message`, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            console.log(message,selectedgroupid, User)
+
 
         } catch(e){
             console.log(e);
         }
     }
 
-    return(
-        <div>
-        <div className='fixed top-0 left-0 h-screen w-1/4 m-0 flex flex-col bg-gray-800 text-white py-32 z-0  shadow-lg rounded-lg overflow-hidden'>           
-            {arrayData}
-            <div className='text-white'>
-                {selectedgroupid && <p>Selected Group ID: {selectedgroupid}</p>}
-                {User}
-            </div>
-        </div>
-        <div>
-            {!connection 
-            ? <div>Select a chat</div>
-            : <Chat messages={messages} sendMessage = {sendMessage}/>}
-            
+    //Gets the messages with a api request to the backend and setmessages
+    const getMessagesbyGroupId = async (groupId) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await axios.get(`https://localhost:44306/api/Message/id/${groupId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setMessages(response.data)
+        } catch(e){
+            console.log(e)
+        }
+    }
 
-        </div>
-        </div>)
+        //Maps the groups list and displays them
+    const grouplist = groups.map((group) => <button key = {group.id} onClick={() => handleGroupSelect(group.id, group.groupName)} className=' hover:bg-gray-600 p-7 border-y-2 flex items-center space-x-20 divide-gray-200 dark:divide-gray-700'>
+        <p >{group.groupName}</p>
+        <p >Member id: {group.membersId}</p>
+        </button>);
+
+    //Update group list after creating a new group by using a callback function to update the value in GroupList
+    const updateGroups = (newgroup) => {
+        setAddedGroup(newgroup)
+      }
+
+    
+
+
+
+    return(
+        
+<div className='flex '>
+  <div className='fixed top-0 left-0 h-screen w-1/3 m-0 flex flex-col bg-gray-800 text-white py-32 z-0  shadow-lg rounded-lg overflow-auto'> 
+    <CreateGroup updateGroups={updateGroups}/>        
+    {grouplist}
+
+    <div className='text-white'>
+      {selectedgroupid && <p>Selected Group ID: {selectedgroupid}</p>}
+      {User}
+    </div>
+
+    <div ref={grouplistEndRef}></div>
+  </div>
+
+  <div className='flex-1 ml-1 w-2/3'>
+    <div className='font-extrabold text-gray-900 dark:text-white md:text-5xl '>
+      {groupTitle}
+    </div>
+    <div className=''>
+    {connection && <Chat messages={messages} sendMessage={sendMessage} disconnect={disconnect} selectedgroupid={selectedgroupid} User={User} />}
+    </div>
+  </div>
+</div>
+)
   
 };
 

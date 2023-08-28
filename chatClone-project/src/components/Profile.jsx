@@ -11,7 +11,7 @@ const Profile = () => {
 
 
     return(
-        <div className='fixed top-7 right-10 '>           
+        <div className=' '>           
             <h1 className='font-semibold'>User: {user.name}</h1>
         </div>)
   

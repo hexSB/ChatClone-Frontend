@@ -2,9 +2,10 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-const CreateGroup = () => {
+const CreateGroup = ({updateGroups}) => {
     const { loginWithRedirect, logout, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
-    const [NoNameError, setNoNameError] = useState("Enter a name")
+    const [NoNameError, setNoNameError] = useState("")
+
     
 
     const [data, setData] = useState({
@@ -19,6 +20,8 @@ const CreateGroup = () => {
       const handleSubmit = async (event) => {
         event.preventDefault();
         console.log("Data logged:", data)
+        setData({ GroupName: "" })
+        createGroup()
       };
 
       async function createGroup() {
@@ -32,7 +35,8 @@ const CreateGroup = () => {
               });
             
               console.log(response.data);
-              setNoNameError("Group Created")
+              setNoNameError("")
+              updateGroups(data.GroupName)
             }
             else{
                 setNoNameError("A Group Name is required")
@@ -42,12 +46,13 @@ const CreateGroup = () => {
         }
 
 
+
+
     return(
         <div>
-
-            <div className='fixed top-10 left-20 z-50'>
-                <form onSubmit={handleSubmit}>
-                Group Name:
+            <div className='-mt-20'>
+                <form onSubmit={handleSubmit} className=' bg-gray-800' >
+                Enter Group Name:
                     <label className='px-2'>
                     <input
                         type="text"
@@ -56,9 +61,13 @@ const CreateGroup = () => {
                         onChange={handleInputChange}
                     />
                     </label>
-                    <button type="submit" onClick={createGroup} className='bg-green-700 rounded-full'>Submit Group</button>
+                    <button type="submit" className='bg-green-700 rounded-full'>Create New Group 
+                    <svg class="w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                      <path d="M6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Zm11-3h-2V5a1 1 0 0 0-2 0v2h-2a1 1 0 1 0 0 2h2v2a1 1 0 0 0 2 0V9h2a1 1 0 1 0 0-2Z"/>
+                    </svg>
+                    </button>
                 </form>
-                <div>{NoNameError}</div>
+                <div className='text-red-600 text-lg'>{NoNameError}</div>
             </div>       
         </div>)
   

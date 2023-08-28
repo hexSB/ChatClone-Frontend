@@ -10,55 +10,34 @@ import JoinGroup from '../components/JoinGroup';
 
 const Welcome = () => {
     const { loginWithRedirect, logout, isAuthenticated, isLoading, getAccessTokenSilently, user } = useAuth0();
-    const [selectedId, setSelectedId] = useState("")
+    const [newgroups, setNewgroups] = useState([]) 
+    const[groupid, setGroupid] = useState()
 
-
-
-
-    async function callUserApi() {
-      const token = await getAccessTokenSilently();
-      const response = await axios.get("https://localhost:44306/api/private", {
-        headers:{
-          authorization: `Bearer ${token}`
-        }
-      })
-      console.log(response.data,token)
+    const getGroupid = (id) =>{
+      setGroupid(id)
     }
-
-
-
-
-    async function GroupGetTest() {
-      const token = await getAccessTokenSilently();
-      const response = await axios.get("https://localhost:44306/api/Group", {
-        headers:{
-          authorization: `Bearer ${token}`,
-          
-        }
-      })
-      console.log(response.data)
-    }
-
-
 
     
     return(
-      <div className='flex h-screen'>
-        <div className="m-auto">
-        <Profile/>
+      <div >
+
         <div >
-            <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+          <div className='font-bold text-lg'>
+          Group Id: {groupid}
+          </div>
+
+
+        <div className='fixed top-0 right-0 pr-4'>
+          <div className='pt-5'>
+          <Profile/>
+          </div>
+            <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })} className='bg-red-600 text-white font-extrabold'>
               Log Out
             </button>
-            <button onClick={callUserApi}>Get Auth</button>
-
-            <button onClick={GroupGetTest}>Get All Groups</button>
         </div>
-        <JoinGroup/>
-        <div>
-          <GroupList setSelectedId = {setSelectedId}/>
-          <h1>Test {selectedId}</h1>
-          <div><CreateGroup/></div>
+        <div >
+          <GroupList sendGroupId = {getGroupid}/> <JoinGroup/>
+
           </div>
 
         </div>

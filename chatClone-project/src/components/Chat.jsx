@@ -6,15 +6,16 @@ import MessageContainer from './MessageContainer';
 import SendMessageForm from './SendMessageForm';
 
 
-const Chat = ({messages, sendMessage}) => {
-
-
-
+const Chat = ({messages, sendMessage, disconnect, selectedgroupid, User}) => {
     return(
         <div>
             <div>
-                <MessageContainer messages={messages}/>
-                <SendMessageForm sendMessage={sendMessage}/>
+            <div className=' '>
+                <MessageContainer messages={messages} User={User}/>
+                </div>
+                <div className=''>
+                <SendMessageForm sendMessage={sendMessage} selectedgroupid={selectedgroupid} User={User}/>
+                </div>
 
             </div>
         </div>)
