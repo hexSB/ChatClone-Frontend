@@ -1,17 +1,14 @@
 import { useAuth0 } from '@auth0/auth0-react'
-import axios from 'axios'
-import { useEffect, useState } from 'react';
+import {useState } from 'react';
 import GroupList from '../components/GroupList';
 import CreateGroup from '../components/CreateGroup';
 import Profile from '../components/Profile';
-import {HubConnection, HubConnectionBuilder, LogLevel} from '@microsoft/signalr'
-import Chat from '../components/Chat';
 import JoinGroup from '../components/JoinGroup';
 
 const Welcome = () => {
-    const { loginWithRedirect, logout, isAuthenticated, isLoading, getAccessTokenSilently, user } = useAuth0();
-    const [newgroups, setNewgroups] = useState([]) 
+    const { logout} = useAuth0();
     const[groupid, setGroupid] = useState()
+   
 
     const getGroupid = (id) =>{
       setGroupid(id)
@@ -34,11 +31,12 @@ const Welcome = () => {
             <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })} className='bg-red-600 text-white font-extrabold'>
               Log Out
             </button>
+
         </div>
         <div >
-          <GroupList sendGroupId = {getGroupid}/> <JoinGroup/>
+          <GroupList sendGroupId = {getGroupid}/>
 
-          </div>
+        </div>
 
         </div>
       </div>

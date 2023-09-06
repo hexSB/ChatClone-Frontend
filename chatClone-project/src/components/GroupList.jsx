@@ -5,6 +5,7 @@ import { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import {HubConnectionBuilder, LogLevel} from '@microsoft/signalr'
 import Chat from './Chat';
 import CreateGroup from './CreateGroup';
+import JoinGroup from './JoinGroup';
 
 const GroupList = ({sendGroupId}) => {
     const { getAccessTokenSilently, user } = useAuth0();
@@ -16,6 +17,10 @@ const GroupList = ({sendGroupId}) => {
     const [prevGroupId, setprevGroupId] = useState("")
     const [groupTitle, setGroupTitle] = useState("")
     const [addedGroup, setAddedGroup] = useState("")
+    const [token, settoken] = useState("")
+    const Chat_URL = import.meta.env.VITE_API_CHAT_URL
+    const Joined_URL = import.meta.env.VITE_API_JOINED_URL
+    const Message_URL = import.meta.env.VITE_API_Message_URL
 
 
 
@@ -24,7 +29,7 @@ const GroupList = ({sendGroupId}) => {
     const joinRoom = async (user, groupId) => {
         try {
             const connection = new HubConnectionBuilder()
-                .withUrl("https://localhost:44306/Chat")
+                .withUrl(Chat_URL)
                 .configureLogging(LogLevel.Information)
                 .build();
     
@@ -60,7 +65,7 @@ const GroupList = ({sendGroupId}) => {
         const fetchData = async () => {
             try {
                 const token = await getAccessTokenSilently();
-                const response = await axios.get('https://localhost:44306/api/Group/joined', {
+                const response = await axios.get(Joined_URL, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -68,7 +73,6 @@ const GroupList = ({sendGroupId}) => {
                 setGroups(response.data);
                 console.log(response.data)
                 setUserid(user.name)
-
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -135,7 +139,7 @@ const GroupList = ({sendGroupId}) => {
                 "message": message,
                 "timestamp": ""
             }
-            const response = await axios.post(`https://localhost:44306/api/Message`, data, {
+            const response = await axios.post(Message_URL, data, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -152,7 +156,7 @@ const GroupList = ({sendGroupId}) => {
     const getMessagesbyGroupId = async (groupId) => {
         try {
             const token = await getAccessTokenSilently();
-            const response = await axios.get(`https://localhost:44306/api/Message/id/${groupId}`, {
+            const response = await axios.get(`${Message_URL}/id/${groupId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -166,13 +170,14 @@ const GroupList = ({sendGroupId}) => {
         //Maps the groups list and displays them
     const grouplist = groups.map((group) => <button key = {group.id} onClick={() => handleGroupSelect(group.id, group.groupName)} className=' hover:bg-gray-600 p-7 border-y-2 flex items-center space-x-20 divide-gray-200 dark:divide-gray-700'>
         <p >{group.groupName}</p>
-        <p >Member id: {group.membersId}</p>
+        <p >Group id: {group.id}</p>
         </button>);
 
     //Update group list after creating a new group by using a callback function to update the value in GroupList
     const updateGroups = (newgroup) => {
         setAddedGroup(newgroup)
       }
+
 
     
 
@@ -182,8 +187,10 @@ const GroupList = ({sendGroupId}) => {
         
 <div className='flex '>
   <div className='fixed top-0 left-0 h-screen w-1/3 m-0 flex flex-col bg-gray-800 text-white py-32 z-0  shadow-lg rounded-lg overflow-auto'> 
-    <CreateGroup updateGroups={updateGroups}/>        
+    <CreateGroup updateGroups={updateGroups}/>
+    <JoinGroup updateGroups={updateGroups}/>        
     {grouplist}
+    
 
     <div className='text-white'>
       {selectedgroupid && <p>Selected Group ID: {selectedgroupid}</p>}

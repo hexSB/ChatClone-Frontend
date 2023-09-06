@@ -1,10 +1,12 @@
 
 import { useAuth0 } from '@auth0/auth0-react'
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import {useState } from 'react';
 const CreateGroup = ({updateGroups}) => {
-    const { loginWithRedirect, logout, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+    const {getAccessTokenSilently } = useAuth0();
     const [NoNameError, setNoNameError] = useState("")
+    const Group_URL = import.meta.env.VITE_API_Group_URL
+    
 
     
 
@@ -28,7 +30,7 @@ const CreateGroup = ({updateGroups}) => {
         const token = await getAccessTokenSilently(); 
         
         if (data.GroupName !== ""){
-            const response = await axios.post("https://localhost:44306/api/Group", data, {
+            const response = await axios.post(Group_URL, data, {
                 headers: {
                   Authorization: `Bearer ${token}`
                 }
@@ -50,8 +52,8 @@ const CreateGroup = ({updateGroups}) => {
 
     return(
         <div>
-            <div className='-mt-20'>
-                <form onSubmit={handleSubmit} className=' bg-gray-800' >
+            <div className='-mt-20 '>
+                <form onSubmit={handleSubmit} className=' bg-gray-800 ' >
                 Enter Group Name:
                     <label className='px-2'>
                     <input
@@ -61,8 +63,8 @@ const CreateGroup = ({updateGroups}) => {
                         onChange={handleInputChange}
                     />
                     </label>
-                    <button type="submit" className='bg-green-700 rounded-full'>Create New Group 
-                    <svg class="w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                    <button type="submit" className='bg-green-700 rounded-full '>Create New Group 
+                    <svg className="w-5 h-5 text-gray-800 dark:text-white inline  ml-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                       <path d="M6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Zm11-3h-2V5a1 1 0 0 0-2 0v2h-2a1 1 0 1 0 0 2h2v2a1 1 0 0 0 2 0V9h2a1 1 0 1 0 0-2Z"/>
                     </svg>
                     </button>
