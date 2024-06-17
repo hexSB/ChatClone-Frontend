@@ -29,7 +29,7 @@ const MessageContainer = ({ messages }) => {
     try {
       scrollToBottom();
     } catch (e) {
-      console.log("No text");
+      console.log("No text.");
     }
 
     // Add scroll event listener when component mounts
