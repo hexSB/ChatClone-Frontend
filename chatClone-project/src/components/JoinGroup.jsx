@@ -32,6 +32,9 @@ const JoinGroup = ({updateGroups}) => {
     }
 
 
+
+
+
     return(
         <div>
             <div>
@@ -55,6 +58,7 @@ const JoinGroup = ({updateGroups}) => {
  
                     </button>
                 </form>
+
 
             </div>
         </div>)

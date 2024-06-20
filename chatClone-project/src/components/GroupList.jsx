@@ -33,14 +33,13 @@ const GroupList = ({sendGroupId}) => {
                 .configureLogging(LogLevel.Information)
                 .build();
     
-                connection.on("ReceiveMessage", (chatMessage) => {
-                    setMessages(messages => [...messages, chatMessage]);
-                });
-
-                connection.onclose(e => {
-                    setConnection()
-                })
-                
+            connection.on("ReceiveMessage", (sender, chatMessage) => {
+                getMessagesbyGroupId(groupId);
+            });
+    
+            connection.onclose(e => {
+                setConnection()
+            })
     
             await connection.start();
             await connection.invoke("JoinRoom", { user: JSON.stringify(user), groupId });
@@ -49,6 +48,8 @@ const GroupList = ({sendGroupId}) => {
             console.log(e);
         }
     };
+
+
     //Disconnect from the web socket
     const disconnect = async () => {
         try{
@@ -129,7 +130,6 @@ const GroupList = ({sendGroupId}) => {
     //Sends the message to the websocket and store it to db
     const sendMessage = async (message, selectedgroupid, User) => {
         try{
-            await connection.invoke("SendMessage", message);
 
             //Sends a post request to a create message api
             const token = await getAccessTokenSilently();
@@ -145,6 +145,8 @@ const GroupList = ({sendGroupId}) => {
                 }
             });
             console.log(message,selectedgroupid, User)
+
+            await connection.invoke("SendMessage", message);
 
 
         } catch(e){
@@ -164,6 +166,7 @@ const GroupList = ({sendGroupId}) => {
             setMessages(response.data)
         } catch(e){
             console.log(e)
+            console.log("Error getting messages")
         }
     }
 
