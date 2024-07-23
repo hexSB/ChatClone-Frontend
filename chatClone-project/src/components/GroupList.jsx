@@ -21,6 +21,7 @@ const GroupList = ({sendGroupId}) => {
     const Chat_URL = import.meta.env.VITE_API_CHAT_URL
     const Joined_URL = import.meta.env.VITE_API_JOINED_URL
     const Message_URL = import.meta.env.VITE_API_Message_URL
+    const Sentiment_URL = import.meta.env.VITE_API_SENTIMENT_URL
 
     const [conversation, setConversation] = useState("")
 
@@ -154,7 +155,7 @@ const GroupList = ({sendGroupId}) => {
 
     const apiTest = async () => {
         try {
-            const response = await axios.get(`http://127.0.0.1:8000/test`, {
+            const response = await axios.get(`${Sentiment_URL}/test`, {
             });
             console.log(response.data)
         } catch(e){
@@ -184,7 +185,7 @@ const GroupList = ({sendGroupId}) => {
     
         try {
             console.log(`Sent request`)
-            const response = await axios.post(`http://127.0.0.1:8000/sentiment`, {
+            const response = await axios.post(`${Sentiment_URL}/sentiment`, {
                 text: `{${result}}`
             });
             const responseData = response.data;
