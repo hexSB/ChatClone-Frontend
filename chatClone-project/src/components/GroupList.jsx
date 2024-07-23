@@ -22,6 +22,8 @@ const GroupList = ({sendGroupId}) => {
     const Joined_URL = import.meta.env.VITE_API_JOINED_URL
     const Message_URL = import.meta.env.VITE_API_Message_URL
 
+    const [conversation, setConversation] = useState("")
+
 
 
 
@@ -35,6 +37,7 @@ const GroupList = ({sendGroupId}) => {
     
             connection.on("ReceiveMessage", (sender, chatMessage) => {
                 getMessagesbyGroupId(groupId);
+                console.log(messages)
             });
     
             connection.onclose(e => {
@@ -125,6 +128,76 @@ const GroupList = ({sendGroupId}) => {
 
     }
 
+    const messagesTest = async () => {
+        const lastFiveMessages = messages.slice(-5).map(message => ({
+            user: message.user,
+            message: message.message
+        }));
+        const map = {};
+        let count = 1;
+        let result = '';
+    
+        lastFiveMessages.forEach(message => {
+            if (!map[message.user]) {
+                map[message.user] = `user${count}`;
+                count++;
+            }
+            message.user = map[message.user];
+            result += `${message.user}: ${message.message} / `;
+        });
+
+        result = result.slice(0, -3);
+    
+        console.log(`{${result}}`);
+        setConversation(`{${result}}`);
+    }
+
+    const apiTest = async () => {
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/test`, {
+            });
+            console.log(response.data)
+        } catch(e){
+            console.log(e)
+            console.log("Error getting messages")
+        }
+    }
+    const SentimentApiTest = async (conversation) => {
+        const lastFiveMessages = messages.slice(-5).map(message => ({
+            user: message.user,
+            message: message.message
+        }));
+        const map = {};
+        let count = 1;
+        let result = '';
+    
+        lastFiveMessages.forEach(message => {
+            if (!map[message.user]) {
+                map[message.user] = `user${count}`;
+                count++;
+            }
+            message.user = map[message.user];
+            result += `${message.user}: ${message.message} / `;
+        });
+    
+        result = result.slice(0, -3);
+    
+        try {
+            console.log(`Sent request`)
+            const response = await axios.post(`http://127.0.0.1:8000/sentiment`, {
+                text: `{${result}}`
+            });
+            const responseData = response.data;
+            const match = responseData.match(/### Response:\s*(.*?)\s*<\|end_of_text\|>/);
+            const sentiment = match ? match[1].trim() : 'unknown';
+            console.log(sentiment);
+        } catch(e){
+            console.log(e)
+            console.log(`{${result}}`)
+        }
+    }
+
+    
 
 
     //Sends the message to the websocket and store it to db
@@ -199,6 +272,10 @@ const GroupList = ({sendGroupId}) => {
       {selectedgroupid && <p>Selected Group ID: {selectedgroupid}</p>}
       {User}
     </div>
+
+    <button onClick={messagesTest}>Test</button>
+    <button onClick={apiTest}>Test API</button>
+    <button onClick={SentimentApiTest}>Sentiment API</button>
 
     <div ref={grouplistEndRef}></div>
   </div>

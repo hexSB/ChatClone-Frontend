@@ -50,7 +50,7 @@ const MessageContainer = ({ messages }) => {
           </div>
         </button>
       )}
-      <div className='absolute inset-y-0 right-0 text-justify divide-y w-2/3 mt-64 '>
+      <div className='absolute inset-y-0 right-0 text-justify divide-y w-2/3 mt-64'>
         {messages && Array.isArray(messages) ? (
           messages.map((message, index) => (
             <div
