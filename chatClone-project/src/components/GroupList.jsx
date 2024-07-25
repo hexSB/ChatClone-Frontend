@@ -18,6 +18,7 @@ const GroupList = ({sendGroupId}) => {
     const [groupTitle, setGroupTitle] = useState("")
     const [addedGroup, setAddedGroup] = useState("")
     const [token, settoken] = useState("")
+    const [sentiments, setSentiments] = useState("")
     const Chat_URL = import.meta.env.VITE_API_CHAT_URL
     const Joined_URL = import.meta.env.VITE_API_JOINED_URL
     const Message_URL = import.meta.env.VITE_API_Message_URL
@@ -192,9 +193,23 @@ const GroupList = ({sendGroupId}) => {
             const match = responseData.match(/### Response:\s*(.*?)\s*<\|end_of_text\|>/);
             const sentiment = match ? match[1].trim() : 'unknown';
             console.log(sentiment);
+            SentimentToEmoji(sentiment);
         } catch(e){
             console.log(e)
             console.log(`{${result}}`)
+    
+        }
+    }
+
+    const SentimentToEmoji = async (sentiments) => {
+        if (sentiments === "positive") {
+            setSentiments("\uD83D\uDE03");
+        } else if (sentiments === "negative") {
+            setSentiments("\uD83D\uDE1E");
+        } else if (sentiments === "neutral") {
+            setSentiments("\uD83D\uDE10");
+        } else {
+            setSentiments("unknown");
         }
     }
 
@@ -277,6 +292,10 @@ const GroupList = ({sendGroupId}) => {
     <button onClick={messagesTest}>Test</button>
     <button onClick={apiTest}>Test API</button>
     <button onClick={SentimentApiTest}>Sentiment API</button>
+    <style>
+        {`.sentiments::after { content: "${sentiments}"; }`}
+      </style>
+      <div className="sentiments after:content-[attr(data-content)]">Sentiment: </div>
 
     <div ref={grouplistEndRef}></div>
   </div>
