@@ -23,6 +23,7 @@ const GroupList = ({sendGroupId}) => {
     const Joined_URL = import.meta.env.VITE_API_JOINED_URL
     const Message_URL = import.meta.env.VITE_API_Message_URL
     const Sentiment_URL = import.meta.env.VITE_API_SENTIMENT_URL
+    const Group_URL = import.meta.env.VITE_API_Group_URL
 
     const [conversation, setConversation] = useState("")
 
@@ -53,6 +54,24 @@ const GroupList = ({sendGroupId}) => {
             console.log(e);
         }
     };
+
+    const leaveGroup = async (groupId) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await axios.post(`${Group_URL}/leave/${groupId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            console.log(response.data)
+        }
+        catch (e) {
+            console.log(e);
+            console.log("Error leaving group")
+            console.log(token)
+        }
+
+    }
 
 
     //Disconnect from the web socket
@@ -154,6 +173,7 @@ const GroupList = ({sendGroupId}) => {
         setConversation(`{${result}}`);
     }
 
+    //Test API for python backend
     const apiTest = async () => {
         try {
             const response = await axios.get(`${Sentiment_URL}/test`, {
@@ -164,6 +184,8 @@ const GroupList = ({sendGroupId}) => {
             console.log("Error getting messages")
         }
     }
+    
+    //API for sentiment analysis
     const SentimentApiTest = async (conversation) => {
         const lastFiveMessages = messages.slice(-5).map(message => ({
             user: message.user,
@@ -201,6 +223,7 @@ const GroupList = ({sendGroupId}) => {
         }
     }
 
+    //Converts sentiment to emoji
     const SentimentToEmoji = async (sentiments) => {
         if (sentiments === "positive") {
             setSentiments("\uD83D\uDE03");
@@ -253,6 +276,7 @@ const GroupList = ({sendGroupId}) => {
                 }
             });
             setMessages(response.data)
+            console.log(token)
         } catch(e){
             console.log(e)
             console.log("Error getting messages")
@@ -280,7 +304,8 @@ const GroupList = ({sendGroupId}) => {
 <div className='flex '>
   <div className='fixed top-0 left-0 h-screen w-1/3 m-0 flex flex-col bg-gray-800 text-white py-32 z-0  shadow-lg rounded-lg overflow-auto'> 
     <CreateGroup updateGroups={updateGroups}/>
-    <JoinGroup updateGroups={updateGroups}/>        
+    <JoinGroup updateGroups={updateGroups}/>  
+      
     {grouplist}
     
 
@@ -299,8 +324,10 @@ const GroupList = ({sendGroupId}) => {
 
     <div ref={grouplistEndRef}></div>
   </div>
+  
 
   <div className='flex-1 ml-1 w-2/3'>
+  <button onClick={() => leaveGroup(selectedgroupid)} className="z-30 relative">Leave Group</button>
     <div className='font-extrabold text-gray-900 dark:text-white md:text-5xl '>
       {groupTitle}
     </div>
