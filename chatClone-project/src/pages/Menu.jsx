@@ -24,7 +24,7 @@ const Welcome = () => {
           </div>
 
 
-        <div className='fixed top-0 right-0 pr-4'>
+        <div className='fixed top-0 right-0 pr-4 z-40'>
           <div className='pt-5'>
           <Profile/>
           </div>

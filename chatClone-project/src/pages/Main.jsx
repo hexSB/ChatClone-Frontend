@@ -7,7 +7,7 @@ const Log = () => {
           <div className="m-auto">
           <h1 className='font-bold tracking-wide text-8xl py-9'>ChatClone</h1>
             <button onClick={() => loginWithRedirect()}>Log In</button>
-            <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+            <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })} className="z-40 relative">
               Log Out
             </button>
             <h3>User is {isAuthenticated ? "Logged in" : "Not Logged in, Please Login"}</h3>
