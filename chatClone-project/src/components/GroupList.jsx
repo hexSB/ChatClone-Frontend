@@ -55,9 +55,9 @@ const GroupList = ({sendGroupId}) => {
         }
     };
 
-    const leaveGroup = async (groupId) => {
+    async function leaveGroup(groupId) {
         try {
-            const token = await getAccessTokenSilently();
+            console.log(token)
             const response = await axios.post(`${Group_URL}/leave/${groupId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -68,7 +68,6 @@ const GroupList = ({sendGroupId}) => {
         catch (e) {
             console.log(e);
             console.log("Error leaving group")
-            console.log(token)
         }
 
     }
@@ -90,6 +89,8 @@ const GroupList = ({sendGroupId}) => {
         const fetchData = async () => {
             try {
                 const token = await getAccessTokenSilently();
+                settoken(token)
+                console.log("THE "+token)
                 const response = await axios.get(Joined_URL, {
                     headers: {
                         Authorization: `Bearer ${token}`
