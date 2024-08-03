@@ -57,13 +57,15 @@ const GroupList = ({sendGroupId}) => {
 
     async function leaveGroup(groupId) {
         try {
-            console.log(token)
-            const response = await axios.post(`${Group_URL}/leave/${groupId}`, {
+            const tokens = await getAccessTokenSilently();
+            console.log(tokens)
+            const response = await axios.get(`${Group_URL}/leave/${groupId}`, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${tokens}`
                 }
             });
             console.log(response.data)
+            fetchGroups();
         }
         catch (e) {
             console.log(e);
@@ -84,24 +86,28 @@ const GroupList = ({sendGroupId}) => {
     }
     
     
+    const fetchGroups = async () => {
+        try {
+            const token = await getAccessTokenSilently();
+            settoken(token)
+            console.log("THE "+token)
+            const response = await axios.get(Joined_URL, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setGroups(response.data);
+            console.log(response.data)
+            setUserid(user.name)
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
     //Get request to get all the joined groups
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                const token = await getAccessTokenSilently();
-                settoken(token)
-                console.log("THE "+token)
-                const response = await axios.get(Joined_URL, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                setGroups(response.data);
-                console.log(response.data)
-                setUserid(user.name)
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
+            fetchGroups();
         };
 
         fetchData();
@@ -328,14 +334,19 @@ const GroupList = ({sendGroupId}) => {
   
 
   <div className='flex-1 ml-1 w-2/3'>
-  <button onClick={() => leaveGroup(selectedgroupid)} className="z-30 relative">Leave Group</button>
     <div className='font-extrabold text-gray-900 dark:text-white md:text-5xl '>
       {groupTitle}
     </div>
+    {selectedgroupid && (
+        <button onClick={() => leaveGroup(selectedgroupid)} className="z-30 relative">
+          Leave Group
+        </button>
+      )}
     <div className=''>
     {connection && <Chat messages={messages} sendMessage={sendMessage} disconnect={disconnect} selectedgroupid={selectedgroupid} User={User} />}
     </div>
   </div>
+  
 </div>
 )
   
