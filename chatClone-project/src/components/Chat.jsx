@@ -6,7 +6,7 @@ import MessageContainer from './MessageContainer';
 import SendMessageForm from './SendMessageForm';
 
 
-const Chat = ({messages, sendMessage, disconnect, selectedgroupid, User}) => {
+const Chat = ({messages, sendMessage, disconnect, selectedgroupid, User, sentiment}) => {
     return(
         <div>
             <div>
@@ -14,7 +14,7 @@ const Chat = ({messages, sendMessage, disconnect, selectedgroupid, User}) => {
                 <MessageContainer messages={messages} User={User}/>
                 </div>
                 <div className=''>
-                <SendMessageForm sendMessage={sendMessage} selectedgroupid={selectedgroupid} User={User}/>
+                <SendMessageForm sendMessage={sendMessage} selectedgroupid={selectedgroupid} User={User} sentiment={sentiment}/>
                 </div>
 
             </div>

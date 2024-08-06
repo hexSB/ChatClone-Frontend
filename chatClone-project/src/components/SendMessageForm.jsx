@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 
-const SendMessageForm = ({ sendMessage, selectedgroupid, User}) => {
+const SendMessageForm = ({ sendMessage, selectedgroupid, User, sentiment}) => {
   const [message, setMessage] = useState('');
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -13,6 +14,32 @@ const SendMessageForm = ({ sendMessage, selectedgroupid, User}) => {
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
   };
+
+  const handleSentiment = async () => {
+    if (loading) {
+      console.log('Sentiment analysis is already in progress.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const sentimentVal = await sentiment();
+
+      if (sentimentVal === 'positive') {
+        setMessage('😀');
+      } else if (sentimentVal === 'negative') {
+        setMessage('😢');
+      } else {
+        setMessage('😐');
+      }
+    } catch (error) {
+      console.error('Error getting sentiment:', error);
+      setMessage('Error determining sentiment');
+    } finally {
+      setLoading(false);
+    }
+  }
+
 
   return (
     <div className='fixed inset-y-0 right-0 text-justify divide-y w-2/3 mt-10'>
@@ -33,7 +60,7 @@ const SendMessageForm = ({ sendMessage, selectedgroupid, User}) => {
           <div id="dropdownTop" className="absolute bottom-full mb-2 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
             <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownTopButton">
               <li>
-                <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
+                <a onClick={handleSentiment} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Generate Sentiment</a>
               </li>
             </ul>
           </div>

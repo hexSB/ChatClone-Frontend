@@ -19,6 +19,7 @@ const GroupList = ({sendGroupId}) => {
     const [addedGroup, setAddedGroup] = useState("")
     const [token, settoken] = useState("")
     const [sentiments, setSentiments] = useState("")
+    const [sentimentMsg, setSentimentMsg] = useState("")
     const Chat_URL = import.meta.env.VITE_API_CHAT_URL
     const Joined_URL = import.meta.env.VITE_API_JOINED_URL
     const Message_URL = import.meta.env.VITE_API_Message_URL
@@ -58,7 +59,6 @@ const GroupList = ({sendGroupId}) => {
     async function leaveGroup(groupId) {
         try {
             const tokens = await getAccessTokenSilently();
-            console.log(tokens)
             const response = await axios.get(`${Group_URL}/leave/${groupId}`, {
                 headers: {
                     Authorization: `Bearer ${tokens}`
@@ -90,7 +90,6 @@ const GroupList = ({sendGroupId}) => {
         try {
             const token = await getAccessTokenSilently();
             settoken(token)
-            console.log("THE "+token)
             const response = await axios.get(Joined_URL, {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -193,7 +192,7 @@ const GroupList = ({sendGroupId}) => {
     }
     
     //API for sentiment analysis
-    const SentimentApiTest = async (conversation) => {
+    const SentimentApiTest = async () => {
         const lastFiveMessages = messages.slice(-5).map(message => ({
             user: message.user,
             message: message.message
@@ -223,9 +222,11 @@ const GroupList = ({sendGroupId}) => {
             const sentiment = match ? match[1].trim() : 'unknown';
             console.log(sentiment);
             SentimentToEmoji(sentiment);
+            return sentiment;
         } catch(e){
             console.log(e)
             console.log(`{${result}}`)
+            return 'error';
     
         }
     }
@@ -234,6 +235,7 @@ const GroupList = ({sendGroupId}) => {
     const SentimentToEmoji = async (sentiments) => {
         if (sentiments === "positive") {
             setSentiments("\uD83D\uDE03");
+            setMessages
         } else if (sentiments === "negative") {
             setSentiments("\uD83D\uDE1E");
         } else if (sentiments === "neutral") {
@@ -302,6 +304,7 @@ const GroupList = ({sendGroupId}) => {
       }
 
 
+
     
 
 
@@ -321,9 +324,7 @@ const GroupList = ({sendGroupId}) => {
       {User}
     </div>
 
-    <button onClick={messagesTest}>Test</button>
-    <button onClick={apiTest}>Test API</button>
-    <button onClick={SentimentApiTest}>Sentiment API</button>
+
     <style>
         {`.sentiments::after { content: "${sentiments}"; }`}
       </style>
@@ -343,7 +344,7 @@ const GroupList = ({sendGroupId}) => {
         </button>
       )}
     <div className=''>
-    {connection && <Chat messages={messages} sendMessage={sendMessage} disconnect={disconnect} selectedgroupid={selectedgroupid} User={User} />}
+    {connection && <Chat messages={messages} sendMessage={sendMessage} disconnect={disconnect} selectedgroupid={selectedgroupid} User={User} sentiment={SentimentApiTest}/>}
     </div>
   </div>
   
