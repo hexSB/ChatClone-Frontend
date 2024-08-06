@@ -1,7 +1,14 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
-const SendMessageForm = ({ handleSubmit, message, setMessage }) => {
+const SendMessageForm = ({ sendMessage, selectedgroupid, User}) => {
+  const [message, setMessage] = useState('');
   const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    sendMessage(message, selectedgroupid, User);
+    setMessage('')
+  };
 
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
@@ -13,8 +20,8 @@ const SendMessageForm = ({ handleSubmit, message, setMessage }) => {
         <button
           id="dropdownTopButton"
           onClick={toggleDropdown}
-          className="me-3 mb-3 md:mb-0 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-1 py-1 text-center inline-flex items-center
-           dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="me-3 mb-3 md:mb-0 text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-1 py-1 text-center inline-flex items-center
+           dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-blue-800"
           type="button"
         >
           <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 4 15">
