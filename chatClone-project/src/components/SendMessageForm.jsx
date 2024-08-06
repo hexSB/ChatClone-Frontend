@@ -6,10 +6,15 @@ const SendMessageForm = ({ sendMessage, selectedgroupid, User, sentiment}) => {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e) => {
+    if (loading) {
+        e.preventDefault();
+        return;
+    }
+    
     e.preventDefault();
     sendMessage(message, selectedgroupid, User);
-    setMessage('')
-  };
+    setMessage('');
+};
 
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
@@ -18,11 +23,13 @@ const SendMessageForm = ({ sendMessage, selectedgroupid, User, sentiment}) => {
   const handleSentiment = async () => {
     if (loading) {
       console.log('Sentiment analysis is already in progress.');
+      setMessage('Sentiment analysis is already in progress.');
       return;
     }
 
     setLoading(true);
     try {
+      setMessage(`loading sentiment...`);
       const sentimentVal = await sentiment();
 
       if (sentimentVal === 'positive') {
@@ -60,7 +67,11 @@ const SendMessageForm = ({ sendMessage, selectedgroupid, User, sentiment}) => {
           <div id="dropdownTop" className="absolute bottom-full mb-2 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
             <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownTopButton">
               <li>
-                <a onClick={handleSentiment} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Generate Sentiment</a>
+              <button 
+                onClick={handleSentiment} 
+                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white bg-transparent border-none p-0 m-0 text-left cursor-pointer">
+                Generate Sentiment
+              </button>
               </li>
             </ul>
           </div>
