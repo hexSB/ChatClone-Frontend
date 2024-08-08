@@ -77,6 +77,17 @@ const SendMessageForm = ({ sendMessage, selectedgroupid, User, sentiment}) => {
           </div>
         )}
 
+        <button
+          className="me-3 mb-3 md:mb-0 text-white focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-full text-sm px-0.5 py-1 text-center inline-flex items-center
+           dark:focus:ring-red-800"
+          type="button"
+        >
+          <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9v3a5.006 5.006 0 0 1-5 5h-4a5.006 5.006 0 0 1-5-5V9m7 9v3m-3 0h6M11 3h2a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3h-2a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z"/>
+          </svg>
+        </button>
+        
+
         <form onSubmit={handleSubmit} className="flex-grow">
           <input
             type="text"
@@ -92,6 +103,7 @@ const SendMessageForm = ({ sendMessage, selectedgroupid, User, sentiment}) => {
                 <line x1="22" y1="2" x2="11" y2="13" />
                 <polygon points="22 2 15 22 11 13 2 9 22 2" />
               </svg>
+
             </button>
           </div>
         </form>

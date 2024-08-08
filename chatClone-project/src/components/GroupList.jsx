@@ -323,6 +323,7 @@ const GroupList = ({sendGroupId}) => {
       {selectedgroupid && <p>Selected Group ID: {selectedgroupid}</p>}
       {User}
     </div>
+    <button onClick={apiTest}>Test API</button>
 
 
     <style>
