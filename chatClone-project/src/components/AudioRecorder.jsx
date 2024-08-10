@@ -6,6 +6,8 @@ const AudioRecorder = ({ transcriptUpdate }) => {
   const [audioType, setAudioType] = useState('audio/mp3');
   const [audioSrc, setAudioSrc] = useState(null);
   const [dropdownVisibleMic, setDropdownVisibleMic] = useState(false);
+  const [timeoutId, setTimeoutId] = useState(null);
+  const Sentiment_URL = import.meta.env.VITE_API_SENTIMENT_URL
 
   const toggleDropdownMic = () => {
     setDropdownVisibleMic(!dropdownVisibleMic);
@@ -28,7 +30,7 @@ const AudioRecorder = ({ transcriptUpdate }) => {
     const filename = `file_${new Date().getTime()}`;
     formData.append('file', audioBlob, filename);
 
-    const apiUrl = 'http://localhost:8000/receiveAudio';
+    const apiUrl = `${Sentiment_URL}/receiveAudio`;
 
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -38,7 +40,7 @@ const AudioRecorder = ({ transcriptUpdate }) => {
 
     const jsonResponse = await response.json();
     const transcript = jsonResponse.transcription;
-    transcriptUpdate(transcript);
+    transcriptUpdate(`${transcript}`);
 
     return jsonResponse;
   };
@@ -72,13 +74,19 @@ const AudioRecorder = ({ transcriptUpdate }) => {
       <button
         id="dropdownTopButton"
         onMouseDown={() => {
+          toggleDropdownMic();
+          toggleRecording();
+          const id = setTimeout(() => {
             toggleDropdownMic();
             toggleRecording();
-          }}
-          onMouseUp={() => {
-            toggleRecording();
-            toggleDropdownMic();
-          }}
+          }, 10000); 
+          setTimeoutId(id);
+        }}
+        onMouseUp={() => {
+          toggleRecording();
+          toggleDropdownMic();
+          clearTimeout(timeoutId);
+        }}
         className="me-3 mb-3 md:mb-0 text-white focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-full text-sm px-1 py-2 text-center inline-flex items-center dark:focus:ring-red-800"
         type="button"
       >
